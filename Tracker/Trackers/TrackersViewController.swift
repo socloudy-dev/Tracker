@@ -4,23 +4,23 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     
     // MARK: - Properties
     
-    var categories: [TrackerCategory] = []
-    var completedTrackers: [TrackerRecord] = []
-    var filteredTrackers: [Tracker] = []
-    var allTrackers: [Tracker] = []
+    private var categories: [TrackerCategory] = []
+    private var completedTrackers: [TrackerRecord] = []
+    private var filteredTrackers: [Tracker] = []
+    private var allTrackers: [Tracker] = []
     
     // MARK: - UI Elements
     
-    let navBarAppearance = UINavigationBarAppearance()
+    private let navBarAppearance = UINavigationBarAppearance()
     
-    let datePicker: UIDatePicker = {
+    private let datePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.datePickerMode = .date
         picker.preferredDatePickerStyle = .compact
         return picker
     }()
     
-    let searchField: UISearchTextField = {
+    private let searchField: UISearchTextField = {
         let search = UISearchTextField()
         search.placeholder = "Поиск"
         search.font = .systemFont(ofSize: 17)
@@ -29,7 +29,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         return search
     }()
     
-    let searchContainer: UIView = {
+    private let searchContainer: UIView = {
         let container = UIView()
         container.layer.cornerRadius = 10
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -57,7 +57,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         return imageView
     }()
     
-    let placeholderLabel: UILabel = {
+    private let placeholderLabel: UILabel = {
         let label = UILabel()
         label.text = "Что будем отслеживать?"
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
@@ -156,7 +156,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     // MARK: - Actions
     
     @objc
-    func addButtonDidTap() {
+    private func addButtonDidTap() {
         let viewController = AddTrackerViewController()
         viewController.delegate = self
         viewController.modalPresentationStyle = .formSheet
@@ -164,7 +164,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     }
     
     @objc
-    func datePickerValueChanged(_ sender: UIDatePicker) {
+    private func datePickerValueChanged(_ sender: UIDatePicker) {
         let selectedDate = sender.date
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy"

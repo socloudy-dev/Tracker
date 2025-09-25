@@ -13,7 +13,7 @@ final class ScheduleViewController: UIViewController {
     
     // MARK: - UI Elements
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Расписание"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -22,7 +22,7 @@ final class ScheduleViewController: UIViewController {
         return label
     }()
     
-    let weekDayTableView: UITableView = {
+    private let weekDayTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.separatorStyle = .singleLine
         tableView.separatorColor = UIColor(named: "Gray")
@@ -34,7 +34,7 @@ final class ScheduleViewController: UIViewController {
         return tableView
     }()
     
-    let saveScheduleButton: UIButton = {
+    private let saveScheduleButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: "Black")
         button.layer.cornerRadius = 16
@@ -63,13 +63,13 @@ final class ScheduleViewController: UIViewController {
     
     // MARK: - Setup UI Methods
     
-    func setupViews() {
+    private func setupViews() {
         view.addSubview(titleLabel)
         view.addSubview(weekDayTableView)
         view.addSubview(saveScheduleButton)
     }
     
-    func setupConstraints() {
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 26),
@@ -89,7 +89,7 @@ final class ScheduleViewController: UIViewController {
     // MARK: - Actions
     
     @objc
-    func saveScheduleButtonTapped() {
+    private func saveScheduleButtonTapped() {
         delegate?.didSelectWeekDays(selectedWeekDays)
         dismiss(animated: true)
     }

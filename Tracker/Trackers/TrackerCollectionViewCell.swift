@@ -4,7 +4,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     
     static let reuseIdentifier = "TrackerCollectionViewCell"
     
-    let containerView: UIView = {
+    private let containerView: UIView = {
         let container = UIView()
         container.layer.cornerRadius = 16
         container.backgroundColor = UIColor(named: "Red")
@@ -12,7 +12,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         return container
     }()
     
-    let emojiBackgroundView: UIView = {
+    private let emojiBackgroundView: UIView = {
         let emojiBackground = UIView()
         emojiBackground.layer.cornerRadius = 12
         emojiBackground.backgroundColor = .white
@@ -22,14 +22,14 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         return emojiBackground
     }()
     
-    let emojiLabel: UILabel = {
+    private let emojiLabel: UILabel = {
         let emoji = UILabel()
         emoji.font = .systemFont(ofSize: 16, weight: .medium)
         emoji.translatesAutoresizingMaskIntoConstraints = false
         return emoji
     }()
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.numberOfLines = 0
@@ -38,7 +38,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    let counterLabel: UILabel = {
+    private let counterLabel: UILabel = {
         let counter = UILabel()
         counter.font = .systemFont(ofSize: 12, weight: .medium)
         counter.textColor = UIColor(named: "Black")
@@ -46,7 +46,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         return counter
     }()
     
-    let completeTrackerButton: UIButton = {
+    private let completeTrackerButton: UIButton = {
         let button = UIButton()
         button.layer.cornerRadius = 17
         button.setImage(UIImage(named: "Increase Counter"), for: .normal)
@@ -67,7 +67,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupViews() {
+    private func setupViews() {
         contentView.addSubview(containerView)
         contentView.addSubview(emojiBackgroundView)
         contentView.addSubview(emojiLabel)
@@ -76,7 +76,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(completeTrackerButton)
     }
     
-    func setupConstraints() {
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
