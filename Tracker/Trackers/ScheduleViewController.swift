@@ -102,7 +102,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        let day = WeekDay.allCases[indexPath.row]
+        let day = WeekDay.displayOrder[indexPath.row]
         
         var content = cell.defaultContentConfiguration()
         content.text = day.displayName
@@ -133,7 +133,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     
     @objc
     func switchChanged(_ sender: UISwitch) {
-        let day = WeekDay.allCases[sender.tag]
+        let day = WeekDay.displayOrder[sender.tag]
         if sender.isOn {
             if !selectedWeekDays.contains(day) {
                 selectedWeekDays.append(day)
@@ -141,5 +141,11 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         } else {
             selectedWeekDays.removeAll { $0 == day }
         }
+        
+        selectedWeekDays.sort { day1, day2 in
+                guard let index1 = WeekDay.displayOrder.firstIndex(of: day1),
+                      let index2 = WeekDay.displayOrder.firstIndex(of: day2) else { return false }
+                return index1 < index2
+            }
     }
 }

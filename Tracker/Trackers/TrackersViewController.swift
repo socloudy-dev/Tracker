@@ -8,6 +8,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     private var completedTrackers: [TrackerRecord] = []
     private var filteredTrackers: [Tracker] = []
     private var allTrackers: [Tracker] = []
+    private var currentDate: Date = Date()
     
     // MARK: - UI Elements
     
@@ -153,6 +154,17 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         }
     }
     
+    private func filterTrackers(for date: Date) {
+            let calendar = Calendar.current
+            let weekday = calendar.component(.weekday, from: date)
+            
+            filteredTrackers = allTrackers.filter { tracker in
+                tracker.schedule.contains { $0.rawValue == weekday }
+            }
+        
+            collectionView.reloadData()
+        }
+    
     // MARK: - Actions
     
     @objc
@@ -165,11 +177,13 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     
     @objc
     private func datePickerValueChanged(_ sender: UIDatePicker) {
-        let selectedDate = sender.date
+        currentDate = sender.date
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy"
-        let dateString = dateFormatter.string(from: selectedDate)
+        let dateString = dateFormatter.string(from: currentDate)
         print("Выбранная дата: \(dateString)")
+        
+        filterTrackers(for: currentDate)
     }
 }
 
@@ -179,13 +193,16 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return allTrackers.count
+        return filteredTrackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier, for: indexPath) as? TrackerCollectionViewCell else { return UICollectionViewCell() }
         
-        cell.configureCell(with: allTrackers[indexPath.row])
+        let tracker = filteredTrackers[indexPath.row]
+        let daysCounter = completedTrackers.filter { $0.trackerId == tracker.id }.count
+
+        cell.configureCell(with: filteredTrackers[indexPath.row], daysCounter: daysCounter)
         return cell
     }
     
@@ -222,8 +239,8 @@ extension TrackersViewController: UICollectionViewDelegate {
 
 extension TrackersViewController: AddTrackerDelegate {
     func didCreateTracker(_ tracker: Tracker, from category: String) {
-        filteredTrackers.append(tracker)
         allTrackers.append(tracker)
+        filterTrackers(for: currentDate)
         
         collectionView.reloadData()
         updatePlaceholderVisibility()

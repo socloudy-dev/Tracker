@@ -8,11 +8,21 @@ struct Tracker {
     let schedule: [WeekDay]
 }
 
-enum WeekDay {
-    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+enum WeekDay: Int, CaseIterable {
+    case sunday = 1
+    case monday
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
 }
 
-extension WeekDay: CaseIterable {
+extension WeekDay {
+    static var displayOrder: [WeekDay] {
+            return [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+        }
+    
     var displayName: String {
         switch self {
         case .monday: return "Понедельник"

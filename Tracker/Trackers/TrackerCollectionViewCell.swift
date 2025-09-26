@@ -108,12 +108,12 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configureCell(with tracker: Tracker) {
+    func configureCell(with tracker: Tracker, daysCounter: Int) {
         containerView.backgroundColor = tracker.color
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
         completeTrackerButton.tintColor = tracker.color
-        counterLabel.text = "0 дней"
+        counterLabel.text = daysCounter.dayWithEnding
     }
     
     @objc
