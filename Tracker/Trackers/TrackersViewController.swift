@@ -243,13 +243,15 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension TrackersViewController: UICollectionViewDelegate {
-    
-}
-
 extension TrackersViewController: AddTrackerDelegate {
     func didCreateTracker(_ tracker: Tracker, from category: String) {
-        allTrackers.append(tracker)
+        if tracker.name.lowercased() == "тест" {
+            let testTrackers = MockData.generateTestTrackers()
+            allTrackers.append(contentsOf: testTrackers)
+        } else {
+            allTrackers.append(tracker)
+        }
+        
         filterTrackers(for: currentDate)
         
         if let index = categories.firstIndex(where: { $0.name == category }) {
@@ -261,7 +263,6 @@ extension TrackersViewController: AddTrackerDelegate {
             let newCategory = TrackerCategory(name: category, trackers: [tracker])
             categories.append(newCategory)
         }
-        
         
         collectionView.reloadData()
         updatePlaceholderVisibility()

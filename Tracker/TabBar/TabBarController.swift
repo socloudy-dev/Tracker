@@ -7,6 +7,11 @@ final class TabBarController: UITabBarController {
         
         tabBar.tintColor = UIColor(named: "Blue")
         
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = tabBar.standardAppearance
+        
         let trackersViewController = TrackersViewController()
         let statisticsViewController = StatisticsViewController()
         
