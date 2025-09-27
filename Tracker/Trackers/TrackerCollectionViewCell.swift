@@ -1,8 +1,16 @@
 import UIKit
 
+protocol TrackerCellDelegate: AnyObject {
+    func trackerCellDidTapComplete(_ cell: TrackerCollectionViewCell, for trackerId: UUID)
+}
+
 class TrackerCollectionViewCell: UICollectionViewCell {
     
+    weak var delegate: TrackerCellDelegate?
+    
     static let reuseIdentifier = "TrackerCollectionViewCell"
+    
+    private var trackerId: UUID?
     
     private let containerView: UIView = {
         let container = UIView()
@@ -108,19 +116,31 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configureCell(with tracker: Tracker, daysCounter: Int) {
+    func configureCell(with tracker: Tracker, daysCounter: Int, isCompleted: Bool) {
         containerView.backgroundColor = tracker.color
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
         completeTrackerButton.tintColor = tracker.color
-        counterLabel.text = daysCounter.dayWithEnding
+        trackerId = tracker.id
+        updateCounterLabel(daysCounter: daysCounter.dayWithEnding)
+        updateCompleteButtonState(completed: isCompleted)
+    }
+    
+    func updateCounterLabel(daysCounter: String) {
+        counterLabel.text = daysCounter
+    }
+    
+    func updateCompleteButtonState(completed: Bool) {
+        guard let imageName = completed ? "Tracker Completed" : "Increase Counter" else { return }
+        completeTrackerButton.setImage(UIImage(named: imageName), for: .normal)
     }
     
     @objc
     private func completeTrackerButtonTapped() {
+        guard let unwrappedId = trackerId else { return }
         UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.completeTrackerButton.setImage(UIImage(named: "Tracker Completed"), for: .normal)
-            
+            guard let self else { return }
+            self.delegate?.trackerCellDidTapComplete(self, for: unwrappedId)
         }
     }
 }

@@ -8,7 +8,9 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     private var completedTrackers: [TrackerRecord] = []
     private var filteredTrackers: [Tracker] = []
     private var allTrackers: [Tracker] = []
-    private var currentDate: Date = Date()
+    private var currentDate: Date = Date() {
+        didSet { currentDate = Calendar.current.startOfDay(for: currentDate) }
+    }
     
     // MARK: - UI Elements
     
@@ -44,6 +46,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         layout.minimumInteritemSpacing = 9
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.backgroundColor = .clear
+        collection.showsVerticalScrollIndicator = false
         collection.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier)
         collection.register(TrackerCategoryHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerCategoryHeaderView.reuseIdentifier)
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -155,15 +158,17 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     }
     
     private func filterTrackers(for date: Date) {
-            let calendar = Calendar.current
-            let weekday = calendar.component(.weekday, from: date)
-            
-            filteredTrackers = allTrackers.filter { tracker in
-                tracker.schedule.contains { $0.rawValue == weekday }
-            }
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: date)
         
-            collectionView.reloadData()
+        filteredTrackers = allTrackers.filter { tracker in
+            tracker.schedule.contains { $0.rawValue == weekday }
         }
+        
+        collectionView.reloadData()
+    }
+    
+    
     
     // MARK: - Actions
     
@@ -199,10 +204,15 @@ extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier, for: indexPath) as? TrackerCollectionViewCell else { return UICollectionViewCell() }
         
+        cell.delegate = self
+        
         let tracker = filteredTrackers[indexPath.row]
         let daysCounter = completedTrackers.filter { $0.trackerId == tracker.id }.count
-
-        cell.configureCell(with: filteredTrackers[indexPath.row], daysCounter: daysCounter)
+        let isCompleted = completedTrackers.contains {
+            $0.trackerId == tracker.id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)
+        }
+        
+        cell.configureCell(with: filteredTrackers[indexPath.row], daysCounter: daysCounter, isCompleted: isCompleted)
         return cell
     }
     
@@ -242,9 +252,38 @@ extension TrackersViewController: AddTrackerDelegate {
         allTrackers.append(tracker)
         filterTrackers(for: currentDate)
         
+        if let index = categories.firstIndex(where: { $0.name == category }) {
+            var updatedCategory = categories[index]
+            let newTrackers = updatedCategory.trackers + [tracker]
+            updatedCategory = TrackerCategory(name: updatedCategory.name, trackers: newTrackers)
+            categories[index] = updatedCategory
+        } else {
+            let newCategory = TrackerCategory(name: category, trackers: [tracker])
+            categories.append(newCategory)
+        }
+        
+        
         collectionView.reloadData()
         updatePlaceholderVisibility()
     }
 }
 
+extension TrackersViewController: TrackerCellDelegate {
+    func trackerCellDidTapComplete(_ cell: TrackerCollectionViewCell, for trackerId: UUID) {
+        let today = Calendar.current.startOfDay(for: Date())
+        if currentDate > today { return }
+        
+        if let index = completedTrackers.firstIndex(where: { $0.trackerId == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate) }) {
+            completedTrackers.remove(at: index)
+            cell.updateCompleteButtonState(completed: false)
+        } else {
+            let record = TrackerRecord(trackerId: trackerId, date: currentDate)
+            completedTrackers.append(record)
+            cell.updateCompleteButtonState(completed: true)
+        }
+        
+        let daysCounter = completedTrackers.filter { $0.trackerId == trackerId }.count
+        cell.updateCounterLabel(daysCounter: daysCounter.dayWithEnding)
+    }
+}
 
