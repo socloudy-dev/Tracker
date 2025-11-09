@@ -1,9 +1,9 @@
 import UIKit
 
-final class TrackerCategoryHeaderView: UICollectionReusableView {
-    static let reuseIdentifier = "TrackerCategoryHeaderView"
+final class AddTrackerCollectionHeader: UICollectionReusableView {
+    static let reuseIdentifier = "AddTrackerCollectionHeader"
     
-    private let titleLabel: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.textColor = UIColor.ypBlack
@@ -16,7 +16,7 @@ final class TrackerCategoryHeaderView: UICollectionReusableView {
         super.init(frame: frame)
         addSubview(titleLabel)
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
