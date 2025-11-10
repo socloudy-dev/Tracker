@@ -8,7 +8,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     
     weak var delegate: TrackerCellDelegate?
     
-    static let reuseIdentifier = "TrackerCollectionViewCell"
+    static let reuseIdentifier = "TrackerCell"
     
     private var trackerId: UUID?
     
@@ -131,7 +131,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     func updateCompleteButtonState(completed: Bool) {
-        guard let imageName = completed ? "Tracker Completed" : "Increase Counter" else { return }
+        let imageName = completed ? "Tracker Completed" : "Increase Counter"
         completeTrackerButton.setImage(UIImage(named: imageName), for: .normal)
     }
     

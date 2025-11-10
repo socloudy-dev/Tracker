@@ -12,8 +12,13 @@ final class AddTrackerViewController: UIViewController {
     private var selectedCategory: String = "Важное"
     var selectedWeekDays: [WeekDay] = []
     private var trackerName: String = ""
+    private var trackerEmoji: String = ""
+    private var trackerColor: String = ""
     private var tableTopToTextField: NSLayoutConstraint!
     private var tableTopToLabel: NSLayoutConstraint!
+    
+    private let emojis = ["🙂","😻","🌺","🐶","❤️","😱","😇","😡","🥶","🤔","🙌","🍔","🥦","🏓","🥇","🎸","🏝","😪"]
+    private let colors = TrackerColor.allCases
     
     // MARK: - UI Elements
     
@@ -97,6 +102,21 @@ final class AddTrackerViewController: UIViewController {
         return label
     }()
     
+    private var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 5
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.backgroundColor = .clear
+        collection.showsVerticalScrollIndicator = false
+        collection.register(EmojiCollectionViewCell.self, forCellWithReuseIdentifier: EmojiCollectionViewCell.reuseIdentifier)
+        collection.register(ColorCollectionViewCell.self, forCellWithReuseIdentifier: ColorCollectionViewCell.reuseIdentifier)
+        collection.register(AddTrackerCollectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: AddTrackerCollectionHeader.reuseIdentifier)
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        return collection
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -110,6 +130,10 @@ final class AddTrackerViewController: UIViewController {
         
         trackerTextField.delegate = self
         
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = true
+        
         setupViews()
         setupConstraints()
         setupTargets()
@@ -122,8 +146,9 @@ final class AddTrackerViewController: UIViewController {
     private func setupViews() {
         view.addSubview(headerLabel)
         view.addSubview(trackerTextField)
-        view.addSubview(parametersTableView)
         view.addSubview(symbolLimitLabel)
+        view.addSubview(parametersTableView)
+        view.addSubview(collectionView)
         
         buttonsStackView.addArrangedSubview(cancelButton)
         buttonsStackView.addArrangedSubview(saveTrackerButton)
@@ -151,10 +176,15 @@ final class AddTrackerViewController: UIViewController {
         parametersTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         parametersTableView.heightAnchor.constraint(equalToConstant: 150),
         
+        collectionView.topAnchor.constraint(equalTo: parametersTableView.bottomAnchor, constant: 32),
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        collectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor, constant: -16),
+        
         buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
         buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
         buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-        buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
+        buttonsStackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -196,8 +226,8 @@ final class AddTrackerViewController: UIViewController {
         let newTracker: Tracker = Tracker(
             id: UUID(),
             name: trackerName,
-            color: UIColor(named: "5") ?? .green,
-            emoji: "😍",
+            color: UIColor(named: "\(trackerColor)") ?? .gray,
+            emoji: "\(trackerEmoji)",
             schedule: selectedWeekDays)
         
         delegate?.didCreateTracker(newTracker, from: categoryName)
@@ -219,8 +249,11 @@ final class AddTrackerViewController: UIViewController {
     
     func updateSaveButtonState() {
         let hasText = !(trackerTextField.text?.isEmpty ?? true)
-        let hasSchedule = !(selectedWeekDays.isEmpty)
-        saveTrackerButton.isEnabled = hasText && hasSchedule
+        let hasSchedule = !selectedWeekDays.isEmpty
+        let hasEmoji = !trackerEmoji.isEmpty
+        let hasColor = !trackerColor.isEmpty
+        
+        saveTrackerButton.isEnabled = hasText && hasSchedule && hasEmoji && hasColor
         saveTrackerButton.backgroundColor = saveTrackerButton.isEnabled ? UIColor(named: "Black") : UIColor(named: "Gray")
     }
 }
@@ -306,5 +339,109 @@ extension AddTrackerViewController: UITextFieldDelegate {
         symbolLimitLabel.isHidden = true
         setSymbolLimitVisible(false)
         return true
+    }
+}
+
+extension AddTrackerViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if section == 0 {
+                return emojis.count
+            } else {
+                return colors.count
+            }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.section == 0 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCollectionViewCell.reuseIdentifier, for: indexPath) as? EmojiCollectionViewCell else { return UICollectionViewCell() }
+            cell.configureCell(with: emojis[indexPath.item])
+            return cell
+        } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCollectionViewCell.reuseIdentifier, for: indexPath) as? ColorCollectionViewCell else { return UICollectionViewCell() }
+            cell.configureCell(with: colors[indexPath.item].rawValue)
+            return cell
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: AddTrackerCollectionHeader.reuseIdentifier, for: indexPath) as! AddTrackerCollectionHeader
+            header.titleLabel.text = indexPath.section == 0 ? "Emoji" : "Цвет"
+            return header
+        }
+        return UICollectionReusableView()
+    }
+}
+
+extension AddTrackerViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let size = (collectionView.bounds.width / 6) - 10
+        return CGSize(width: size, height: size)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10, left: 18, bottom: 40, right: 19)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+            return CGSize(width: collectionView.bounds.width, height: 36)
+    }
+}
+extension AddTrackerViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.indexPathsForSelectedItems?
+                .filter { $0.section == indexPath.section && $0 != indexPath }
+                .forEach { collectionView.deselectItem(at: $0, animated: false)
+                    self.collectionView(collectionView, didDeselectItemAt: $0)
+                }
+
+        if indexPath.section == 0 {
+            let selectedEmoji = emojis[indexPath.item]
+            let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
+            
+            trackerEmoji = selectedEmoji
+            updateSaveButtonState()
+            
+            UIView.animate(withDuration: 0.2) {
+                cell?.emojiSelectorView.backgroundColor = .ypLightGray
+            }
+        } else {
+            let selectedColor = colors[indexPath.item].rawValue
+            let cell = collectionView.cellForItem(at: indexPath) as? ColorCollectionViewCell
+            
+            trackerColor = selectedColor
+            updateSaveButtonState()
+            
+            UIView.animate(withDuration: 0.2) {
+                cell?.colorSelectorView.layer.borderWidth = 3
+                cell?.colorSelectorView.alpha = 0.3
+                cell?.colorSelectorView.layer.borderColor = UIColor(named: selectedColor)?.cgColor
+            }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
+            trackerEmoji = ""
+            updateSaveButtonState()
+            UIView.animate(withDuration: 0.2) {
+                cell?.emojiSelectorView.backgroundColor = .ypWhite
+            }
+        } else {
+            let cell = collectionView.cellForItem(at: indexPath) as? ColorCollectionViewCell
+            trackerColor = ""
+            updateSaveButtonState()
+            cell?.colorSelectorView.layer.borderWidth = 0
+            cell?.colorSelectorView.layer.borderColor = UIColor.white.cgColor
+        }
     }
 }
