@@ -131,7 +131,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     func updateCompleteButtonState(completed: Bool) {
-        guard let imageName = completed ? "Tracker Completed" : "Increase Counter" else { return }
+        let imageName = completed ? "Tracker Completed" : "Increase Counter"
         completeTrackerButton.setImage(UIImage(named: imageName), for: .normal)
     }
     

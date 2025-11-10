@@ -18,7 +18,7 @@ final class AddTrackerViewController: UIViewController {
     private var tableTopToLabel: NSLayoutConstraint!
     
     private let emojis = ["🙂","😻","🌺","🐶","❤️","😱","😇","😡","🥶","🤔","🙌","🍔","🥦","🏓","🥇","🎸","🏝","😪"]
-    private let colorsName = (1...18).map { String($0) }
+    private let colors = TrackerColor.allCases
     
     // MARK: - UI Elements
     
@@ -351,7 +351,7 @@ extension AddTrackerViewController: UICollectionViewDataSource {
         if section == 0 {
                 return emojis.count
             } else {
-                return colorsName.count
+                return colors.count
             }
     }
     
@@ -362,7 +362,7 @@ extension AddTrackerViewController: UICollectionViewDataSource {
             return cell
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCollectionViewCell.reuseIdentifier, for: indexPath) as? ColorCollectionViewCell else { return UICollectionViewCell() }
-            cell.configureCell(with: colorsName[indexPath.item])
+            cell.configureCell(with: colors[indexPath.item].rawValue)
             return cell
         }
     }
@@ -414,7 +414,7 @@ extension AddTrackerViewController: UICollectionViewDelegate {
                 cell?.emojiSelectorView.backgroundColor = .ypLightGray
             }
         } else {
-            let selectedColor = colorsName[indexPath.item]
+            let selectedColor = colors[indexPath.item].rawValue
             let cell = collectionView.cellForItem(at: indexPath) as? ColorCollectionViewCell
             
             trackerColor = selectedColor
