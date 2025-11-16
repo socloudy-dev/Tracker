@@ -9,15 +9,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var categoryStore = TrackerCategoryStore(context: coreDataStack.context)
     private lazy var recordStore = TrackerRecordStore(context: coreDataStack.context)
     
+    private let didShowOnboarding = UserDefaults.standard.bool(forKey: "didShowOnboarding")
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
+        
         let tabBarController = TabBarController(trackerStore: trackerStore,
                                                 categoryStore: categoryStore,
                                                 recordStore: recordStore)
-        
-        window.rootViewController = tabBarController
+      
+        if !didShowOnboarding {
+            let onboardingVC = OnboardingViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+            
+            window.rootViewController = onboardingVC
+        } else {
+            window.rootViewController = tabBarController
+        }
+
         window.makeKeyAndVisible()
         
         self.window = window
