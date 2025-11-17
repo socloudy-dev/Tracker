@@ -19,7 +19,7 @@ final class TrackerCategoryHeaderView: UICollectionReusableView {
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 0),
-            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
+            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
         ])
     }
     

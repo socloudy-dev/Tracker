@@ -9,16 +9,28 @@ final class AddTrackerViewController: UIViewController {
     // MARK: - Properties
     
     weak var delegate: AddTrackerDelegate?
-    private var selectedCategory: String = "Важное"
+    private var selectedCategory: String = ""
     var selectedWeekDays: [WeekDay] = []
     private var trackerName: String = ""
     private var trackerEmoji: String = ""
     private var trackerColor: String = ""
     private var tableTopToTextField: NSLayoutConstraint!
     private var tableTopToLabel: NSLayoutConstraint!
+    private let categoryStore: TrackerCategoryStore
     
     private let emojis = ["🙂","😻","🌺","🐶","❤️","😱","😇","😡","🥶","🤔","🙌","🍔","🥦","🏓","🥇","🎸","🏝","😪"]
     private let colors = TrackerColor.allCases
+    
+    // MARK: - Store Initializer
+    
+    init(categoryStore: TrackerCategoryStore) {
+        self.categoryStore = categoryStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - UI Elements
     
@@ -160,31 +172,31 @@ final class AddTrackerViewController: UIViewController {
         tableTopToLabel = parametersTableView.topAnchor.constraint(equalTo: symbolLimitLabel.bottomAnchor, constant: 32)
         
         NSLayoutConstraint.activate([
-        headerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        headerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 26),
-        
-        trackerTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        trackerTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        trackerTextField.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 38),
-        trackerTextField.heightAnchor.constraint(equalToConstant: 75),
-        
-        symbolLimitLabel.topAnchor.constraint(equalTo: trackerTextField.bottomAnchor, constant: 8),
-        symbolLimitLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        
-        tableTopToTextField,
-        parametersTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        parametersTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        parametersTableView.heightAnchor.constraint(equalToConstant: 150),
-        
-        collectionView.topAnchor.constraint(equalTo: parametersTableView.bottomAnchor, constant: 32),
-        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        collectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor, constant: -16),
-        
-        buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-        buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-        buttonsStackView.heightAnchor.constraint(equalToConstant: 60)
+            headerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            headerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 26),
+            
+            trackerTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            trackerTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            trackerTextField.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 38),
+            trackerTextField.heightAnchor.constraint(equalToConstant: 75),
+            
+            symbolLimitLabel.topAnchor.constraint(equalTo: trackerTextField.bottomAnchor, constant: 8),
+            symbolLimitLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            tableTopToTextField,
+            parametersTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            parametersTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            parametersTableView.heightAnchor.constraint(equalToConstant: 150),
+            
+            collectionView.topAnchor.constraint(equalTo: parametersTableView.bottomAnchor, constant: 32),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor, constant: -16),
+            
+            buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            buttonsStackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -206,7 +218,7 @@ final class AddTrackerViewController: UIViewController {
             tableTopToLabel.isActive = false
             tableTopToTextField.isActive = true
         }
-
+        
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -221,8 +233,6 @@ final class AddTrackerViewController: UIViewController {
     
     @objc
     private func saveTrackerButtonTapped() {
-        let categoryName = "Важное"
-        
         let newTracker: Tracker = Tracker(
             id: UUID(),
             name: trackerName,
@@ -230,7 +240,7 @@ final class AddTrackerViewController: UIViewController {
             emoji: "\(trackerEmoji)",
             schedule: selectedWeekDays)
         
-        delegate?.didCreateTracker(newTracker, from: categoryName)
+        delegate?.didCreateTracker(newTracker, from: selectedCategory)
         dismiss(animated: true)
     }
     
@@ -249,11 +259,12 @@ final class AddTrackerViewController: UIViewController {
     
     func updateSaveButtonState() {
         let hasText = !(trackerTextField.text?.isEmpty ?? true)
+        let hasCategory = !selectedCategory.isEmpty
         let hasSchedule = !selectedWeekDays.isEmpty
         let hasEmoji = !trackerEmoji.isEmpty
         let hasColor = !trackerColor.isEmpty
         
-        saveTrackerButton.isEnabled = hasText && hasSchedule && hasEmoji && hasColor
+        saveTrackerButton.isEnabled = hasText && hasCategory && hasSchedule && hasEmoji && hasColor
         saveTrackerButton.backgroundColor = saveTrackerButton.isEnabled ? UIColor(named: "Black") : UIColor(named: "Gray")
     }
 }
@@ -278,7 +289,7 @@ extension AddTrackerViewController: UITableViewDataSource, UITableViewDelegate {
         content.textProperties.color = UIColor(named: "Black") ?? .black
         content.secondaryTextProperties.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         content.secondaryTextProperties.color = UIColor(named: "Gray") ?? .gray
-        content.secondaryText = indexPath.row == 0 ? "Важное" : scheduleString
+        content.secondaryText = indexPath.row == 0 ? selectedCategory : scheduleString
         cell.contentConfiguration = content
         
         cell.selectionStyle = .default
@@ -305,6 +316,11 @@ extension AddTrackerViewController: UITableViewDataSource, UITableViewDelegate {
             scheduleViewController.selectedWeekDays = self.selectedWeekDays
             scheduleViewController.modalPresentationStyle = .formSheet
             present(scheduleViewController, animated: true)
+        } else {
+            let categoriesViewContoller = CategoriesViewContoller(categoryStore: categoryStore)
+            categoriesViewContoller.delegate = self
+            categoriesViewContoller.modalPresentationStyle = .formSheet
+            present(categoriesViewContoller, animated: true)
         }
     }
 }
@@ -349,10 +365,10 @@ extension AddTrackerViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
-                return emojis.count
-            } else {
-                return colors.count
-            }
+            return emojis.count
+        } else {
+            return colors.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -366,7 +382,7 @@ extension AddTrackerViewController: UICollectionViewDataSource {
             return cell
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: AddTrackerCollectionHeader.reuseIdentifier, for: indexPath) as! AddTrackerCollectionHeader
@@ -392,17 +408,17 @@ extension AddTrackerViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-            return CGSize(width: collectionView.bounds.width, height: 36)
+        return CGSize(width: collectionView.bounds.width, height: 36)
     }
 }
 extension AddTrackerViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.indexPathsForSelectedItems?
-                .filter { $0.section == indexPath.section && $0 != indexPath }
-                .forEach { collectionView.deselectItem(at: $0, animated: false)
-                    self.collectionView(collectionView, didDeselectItemAt: $0)
-                }
-
+            .filter { $0.section == indexPath.section && $0 != indexPath }
+            .forEach { collectionView.deselectItem(at: $0, animated: false)
+                self.collectionView(collectionView, didDeselectItemAt: $0)
+            }
+        
         if indexPath.section == 0 {
             let selectedEmoji = emojis[indexPath.item]
             let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
@@ -443,5 +459,13 @@ extension AddTrackerViewController: UICollectionViewDelegate {
             cell?.colorSelectorView.layer.borderWidth = 0
             cell?.colorSelectorView.layer.borderColor = UIColor.white.cgColor
         }
+    }
+}
+
+extension AddTrackerViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: TrackerCategory) {
+        selectedCategory = category.name
+        parametersTableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        updateSaveButtonState()
     }
 }

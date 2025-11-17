@@ -35,8 +35,12 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
     
     func fetchTrackers() {
         let request = TrackerCoreData.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
+        request.sortDescriptors = [
+                NSSortDescriptor(key: "category.name", ascending: true),
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
+
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: request,
             managedObjectContext: context,
