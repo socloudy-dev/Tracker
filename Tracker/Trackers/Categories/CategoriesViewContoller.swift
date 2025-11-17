@@ -5,18 +5,21 @@ protocol CategorySelectionDelegate: AnyObject {
 }
 
 final class CategoriesViewContoller: UIViewController {
+    
     // MARK: Properties
     
     weak var delegate: CategorySelectionDelegate?
-    private var categories: [TrackerCategory] = []
+    private let viewModel: CategoriesViewModel
     private var selectedCategory: TrackerCategory?
     
     private let categoryStore: TrackerCategoryStore
     
-    // MARK: - Store Initializer
+    // MARK: - Initializer
     
     init(categoryStore: TrackerCategoryStore) {
         self.categoryStore = categoryStore
+        self.viewModel = CategoriesViewModel(store: categoryStore)
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -83,8 +86,6 @@ final class CategoriesViewContoller: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        categories = categoryStore.fetchAll().map { TrackerCategory(name: $0.name ?? "", trackers: []) }
-        
         view.backgroundColor = UIColor(named: "White")
         
         categoriesTableView.dataSource = self
@@ -92,6 +93,8 @@ final class CategoriesViewContoller: UIViewController {
         categoriesTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
         addCategoryButton.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
+        bindViewModel()
+        viewModel.load()
         setupViews()
         setupConstraints()
         updatePlaceholderVisibility()
@@ -135,12 +138,21 @@ final class CategoriesViewContoller: UIViewController {
     // MARK: - Setup Methods
     
     private func updatePlaceholderVisibility() {
-        let categoriesCount = categories.count
-        let hasCategories = categoriesCount > 0
+        let hasCategories = !viewModel.categories.isEmpty
         
         UIView.animate(withDuration: 0.2) { [weak self] in
             self?.placeholderImageView.isHidden = hasCategories
             self?.placeholderLabel.isHidden = hasCategories
+        }
+    }
+
+    private func bindViewModel() {
+        viewModel.onUpdate = { [weak self] in
+            self?.categoriesTableView.reloadData()
+            self?.updatePlaceholderVisibility()
+        }
+        viewModel.onSelect = { [weak self] category in
+            self?.delegate?.didSelectCategory(category)
         }
     }
     
@@ -156,12 +168,12 @@ final class CategoriesViewContoller: UIViewController {
 
 extension CategoriesViewContoller: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        categories.count
+        viewModel.categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        let category = categories[indexPath.row]
+        let category = viewModel.categories[indexPath.row]
         
         var content = cell.defaultContentConfiguration()
         content.text = category.name
@@ -195,18 +207,14 @@ extension CategoriesViewContoller: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let category = categories[indexPath.row]
-        selectedCategory = category
-        tableView.reloadData()
-        delegate?.didSelectCategory(category)
+        viewModel.select(at: indexPath.row)
+        
         dismiss(animated: true)
     }
 }
 
 extension CategoriesViewContoller: AddCategoryDelegate {
     func didCreateCategory() {
-        categories = categoryStore.fetchAll().map { TrackerCategory(name: $0.name ?? "", trackers: []) }
-        updatePlaceholderVisibility()
-        categoriesTableView.reloadData()
+        viewModel.load()
     }
 }
