@@ -29,7 +29,7 @@ final class AddCategoryViewController: UIViewController {
         let label = UILabel()
         label.text = "Новая категория"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        label.textColor = UIColor(named: "Black")
+        label.textColor = UIColor(resource: .black)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -38,7 +38,7 @@ final class AddCategoryViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Введите название категории"
         textField.layer.cornerRadius = 16
-        textField.backgroundColor = UIColor(named: "Background")
+        textField.backgroundColor = UIColor(resource: .background)
         
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         textField.leftView = paddingView
@@ -52,11 +52,11 @@ final class AddCategoryViewController: UIViewController {
     
     private let saveCategoryButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: "Black")
+        button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
         button.setTitle("Добавить категорию", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.titleLabel?.textColor = UIColor(named: "White")
+        button.titleLabel?.textColor = UIColor(resource: .white)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -66,7 +66,7 @@ final class AddCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "White")
+        view.backgroundColor = UIColor(resource: .white)
         
         setupViews()
         setupConstraints()

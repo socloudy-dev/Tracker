@@ -2,19 +2,19 @@ import UIKit
 
 final class OnboardingViewController: UIPageViewController {
     
-    lazy var pages: [UIViewController] = {
+    private lazy var pages: [UIViewController] = {
         let first = OnboardingPageViewController(
-            image: UIImage(named: "Onboarding 1")!,
+            image: UIImage(resource: .onboarding1),
             title: "Отслеживайте только то, что хотите")
         
         let second = OnboardingPageViewController(
-            image: UIImage(named: "Onboarding 2")!,
+            image: UIImage(resource: .onboarding2),
             title: "Даже если это \n не литры воды и йога")
         
         return [first, second]
     }()
     
-    lazy var pageControl: UIPageControl = {
+    private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = 0
@@ -26,7 +26,7 @@ final class OnboardingViewController: UIPageViewController {
         return pageControl
     }()
     
-    lazy var skipButton: UIButton = {
+    private lazy var skipButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .ypBlack
         button.layer.cornerRadius = 16

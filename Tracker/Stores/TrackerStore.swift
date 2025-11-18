@@ -62,11 +62,11 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
     }
 
     private func trackers(for sectionObjects: [TrackerCoreData], date: Date) -> [TrackerCoreData] {
-        let weekday = (Calendar.current.component(.weekday, from: date) + 5) % 7 + 1
-        return sectionObjects.filter { tracker in
-            guard let schedule = tracker.schedule as? [Int] else { return false }
-            return schedule.contains(weekday)
-        }
+        let index = Calendar.current.component(.weekday, from: date)
+           return sectionObjects.filter { tracker in
+               guard let schedule = tracker.schedule as? [Int] else { return false }
+               return schedule.contains(index)
+           }
     }
     
     func numberOfTrackers(in section: Int, for date: Date) -> Int {
