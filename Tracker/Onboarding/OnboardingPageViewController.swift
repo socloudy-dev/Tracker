@@ -21,9 +21,9 @@ final class OnboardingPageViewController: UIViewController {
         return label
     }()
     
-    init(image: UIImage, title: String) {
-        self.image = image
-        self.text = title
+    init(pageModel: OnboardingPageModel) {
+        self.image = pageModel.image ?? UIImage()
+        self.text = pageModel.text
         super.init(nibName: nil, bundle: nil)
     }
     

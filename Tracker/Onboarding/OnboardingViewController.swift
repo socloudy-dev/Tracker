@@ -5,13 +5,9 @@ final class OnboardingViewController: UIPageViewController {
     var onFinishOnboarding: (() -> Void)?
     
     private lazy var pages: [UIViewController] = {
-        let first = OnboardingPageViewController(
-            image: UIImage(resource: .onboarding1),
-            title: "Отслеживайте только то, что хотите")
+        let first = OnboardingPageViewController(pageModel: .aboutTracking)
         
-        let second = OnboardingPageViewController(
-            image: UIImage(resource: .onboarding2),
-            title: "Даже если это \n не литры воды и йога")
+        let second = OnboardingPageViewController(pageModel: .aboutWaterAndYoga)
         
         return [first, second]
     }()
