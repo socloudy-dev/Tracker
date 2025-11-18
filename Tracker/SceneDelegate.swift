@@ -19,15 +19,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarController = TabBarController(trackerStore: trackerStore,
                                                 categoryStore: categoryStore,
                                                 recordStore: recordStore)
-      
+        
         if !didShowOnboarding {
             let onboardingVC = OnboardingViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+            
+            onboardingVC.onFinishOnboarding = { [weak self] in
+                guard let self = self else { return }
+                let tabBarController = TabBarController(trackerStore: self.trackerStore,
+                                                        categoryStore: self.categoryStore,
+                                                        recordStore: self.recordStore)
+                self.window?.rootViewController = tabBarController
+            }
+            
             
             window.rootViewController = onboardingVC
         } else {
             window.rootViewController = tabBarController
         }
-
+        
         window.makeKeyAndVisible()
         
         self.window = window

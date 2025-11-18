@@ -2,6 +2,8 @@ import UIKit
 
 final class OnboardingViewController: UIPageViewController {
     
+    var onFinishOnboarding: (() -> Void)?
+    
     private lazy var pages: [UIViewController] = {
         let first = OnboardingPageViewController(
             image: UIImage(resource: .onboarding1),
@@ -71,21 +73,7 @@ final class OnboardingViewController: UIPageViewController {
     private func skipButtonTapped() {
         UserDefaults.standard.set(true, forKey: "didShowOnboarding")
         
-        guard let windowScene = view.window?.windowScene else { return }
-        let window = UIWindow(windowScene: windowScene)
-
-        let coreDataStack = CoreDataStack.shared
-        let tabBarController = TabBarController(
-            trackerStore: TrackerStore(context: coreDataStack.context),
-            categoryStore: TrackerCategoryStore(context: coreDataStack.context),
-            recordStore: TrackerRecordStore(context: coreDataStack.context)
-        )
-
-        window.rootViewController = tabBarController
-        window.makeKeyAndVisible()
-        if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
-            sceneDelegate.window = window
-        }
+        onFinishOnboarding?()
     }
 }
 
@@ -121,11 +109,11 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
 
 extension OnboardingViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-          
-          if let currentViewController = pageViewController.viewControllers?.first,
-             let currentIndex = pages.firstIndex(of: currentViewController) {
-              pageControl.currentPage = currentIndex
-          }
-      }
+        
+        if let currentViewController = pageViewController.viewControllers?.first,
+           let currentIndex = pages.firstIndex(of: currentViewController) {
+            pageControl.currentPage = currentIndex
+        }
+    }
 }
 
