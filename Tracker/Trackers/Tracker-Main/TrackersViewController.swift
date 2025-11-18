@@ -57,7 +57,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 16
         layout.minimumInteritemSpacing = 9
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 12, left: 0, bottom: 16, right: 0)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.backgroundColor = .clear
         collection.showsVerticalScrollIndicator = false
@@ -199,7 +199,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     
     @objc
     private func addButtonDidTap() {
-        let viewController = AddTrackerViewController()
+        let viewController = AddTrackerViewController(categoryStore: categoryStore)
         viewController.delegate = self
         viewController.modalPresentationStyle = .formSheet
         present(viewController, animated: true)
