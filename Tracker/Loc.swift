@@ -8,6 +8,9 @@ enum Loc {
         static let searchPlaceholder = NSLocalizedString("trackers.searchPlaceholder", comment: "")
         static let placeholderLabel = NSLocalizedString("trackers.placeholderLabel", comment: "")
         static let filterPlaceholderLabel = NSLocalizedString("trackers.filterPlaceholderLabel", comment: "")
+        static let completedFilterHeader = NSLocalizedString("trackers.completedFilterHeader", comment: "")
+        static let uncompleteFilterHeader = NSLocalizedString("trackers.uncompleteFilterHeader", comment: "")
+        static let searchResultsHeader = NSLocalizedString("trackers.searchResultsHeader", comment: "")
     }
 
     enum TabBar {

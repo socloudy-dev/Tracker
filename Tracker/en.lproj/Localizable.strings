@@ -5,6 +5,9 @@ trackers.filtersButton = "Filters";
 trackers.searchPlaceholder = "Search";
 trackers.placeholderLabel = "What will we track?";
 trackers.filterPlaceholderLabel = "Nothing was found";
+trackers.completedFilterHeader = "Completed";
+trackers.uncompleteFilterHeader = "Uncomplete";
+trackers.searchResultsHeader = "Search results";
 
 // Tab Bar
 

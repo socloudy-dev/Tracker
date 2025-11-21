@@ -193,6 +193,11 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     private func setupTargets() {
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         filtersButton.addTarget(self, action: #selector(filtersButtonTapped), for: .touchUpInside)
+        searchField.addTarget(self, action: #selector(searchFieldDidChange), for: .editingChanged)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
     
     func setupConstraints() {
@@ -349,11 +354,35 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         filtersViewController.modalPresentationStyle = .formSheet
         present(filtersViewController, animated: true)
     }
+    
+    @objc
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @objc
+    private func searchFieldDidChange() {
+        let text = searchField.text?.lowercased() ?? ""
+
+        if text.isEmpty {
+            filteredTrackers = trackerStore.allTrackersForDate(currentDate)
+            applyFilterIfNeeded()
+        } else {
+            filteredTrackers = trackerStore.allTrackersForDate(currentDate)
+                .filter { $0.name.lowercased().contains(text) }
+            applyFilterIfNeeded()
+        }
+
+        collectionView.reloadData()
+        updateFilterPlaceholderVisibility()
+    }
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        if currentFilter == .completed || currentFilter == .incomplete {
+        if let text = searchField.text, !text.isEmpty {
+            return 1
+        } else if currentFilter == .completed || currentFilter == .incomplete {
             return 1
         } else {
             return trackerStore.numberOfSections()
@@ -361,7 +390,9 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if currentFilter == .completed || currentFilter == .incomplete {
+        if let text = searchField.text, !text.isEmpty {
+            return filteredTrackers.count
+        } else if currentFilter == .completed || currentFilter == .incomplete {
             return filteredTrackers.count
         } else {
             return trackerStore.numberOfTrackers(in: section, for: currentDate)
@@ -374,7 +405,9 @@ extension TrackersViewController: UICollectionViewDataSource {
         cell.delegate = self
         
         let tracker: Tracker
-        if currentFilter == .completed || currentFilter == .incomplete {
+        if let text = searchField.text, !text.isEmpty {
+            tracker = filteredTrackers[indexPath.item]
+        } else if currentFilter == .completed || currentFilter == .incomplete {
             tracker = filteredTrackers[indexPath.item]
         } else {
             tracker = trackerStore.tracker(at: indexPath, for: currentDate)!
@@ -392,15 +425,19 @@ extension TrackersViewController: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerCategoryHeaderView.reuseIdentifier, for: indexPath) as! TrackerCategoryHeaderView
             
-            guard let name = trackerStore.categoryName(for: indexPath.section) else { return UICollectionReusableView() }
-            switch currentFilter {
-            case .completed:
-                header.configure(with: "Выполненные")
-            case .incomplete:
-                header.configure(with: "Не выполненные")
-            default:
-                header.configure(with: name)
-        }
+            if let text = searchField.text, !text.isEmpty {
+                header.configure(with: Loc.TrackersMain.searchResultsHeader)
+            } else {
+                switch currentFilter {
+                case .completed:
+                    header.configure(with: Loc.TrackersMain.completedFilterHeader)
+                case .incomplete:
+                    header.configure(with: Loc.TrackersMain.uncompleteFilterHeader)
+                default:
+                    guard let name = trackerStore.categoryName(for: indexPath.section) else { return UICollectionReusableView() }
+                    header.configure(with: name)
+                }
+            }
             return header
         }
         return UICollectionReusableView()

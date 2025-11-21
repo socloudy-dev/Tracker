@@ -5,6 +5,9 @@ trackers.filtersButton = "Фильтры";
 trackers.searchPlaceholder = "Поиск";
 trackers.placeholderLabel = "Что будем отслеживать?";
 trackers.filterPlaceholderLabel = "Ничего не найдено";
+trackers.completedFilterHeader = "Выполненные";
+trackers.uncompleteFilterHeader = "Не выполненные";
+trackers.searchResultsHeader = "Результаты поиска";
 
 // Tab Bar
 
