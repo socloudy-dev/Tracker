@@ -38,7 +38,7 @@ final class AddTrackerViewController: UIViewController {
         let label = UILabel()
         label.text = "Новая привычка"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        label.textColor = UIColor(named: "Black")
+        label.textColor = UIColor(resource: .black)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -47,7 +47,7 @@ final class AddTrackerViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
         textField.layer.cornerRadius = 16
-        textField.backgroundColor = UIColor(named: "Background")
+        textField.backgroundColor = UIColor(resource: .background)
         
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         textField.leftView = paddingView
@@ -62,7 +62,7 @@ final class AddTrackerViewController: UIViewController {
     private let parametersTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.separatorStyle = .singleLine
-        tableView.separatorColor = UIColor(named: "Gray")
+        tableView.separatorColor = UIColor(resource: .gray)
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.isScrollEnabled = false
@@ -73,24 +73,24 @@ final class AddTrackerViewController: UIViewController {
     
     private let cancelButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: "White")
+        button.backgroundColor = UIColor(resource: .white)
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor(named: "Red")?.cgColor
+        button.layer.borderColor = UIColor(resource: .red).cgColor
         button.setTitle("Отменить", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(UIColor(named: "Red"), for: .normal)
+        button.setTitleColor(UIColor(resource: .red), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private let saveTrackerButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: "Gray")
+        button.backgroundColor = UIColor(resource: .gray)
         button.layer.cornerRadius = 16
         button.setTitle("Создать", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(UIColor(named: "White"), for: .normal)
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -108,7 +108,7 @@ final class AddTrackerViewController: UIViewController {
         let label = UILabel()
         label.text = "Ограничение 38 символов"
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textColor = UIColor(named: "Red")
+        label.textColor = UIColor(resource: .red)
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -134,7 +134,7 @@ final class AddTrackerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "White")
+        view.backgroundColor = UIColor(resource: .white)
         
         parametersTableView.dataSource = self
         parametersTableView.delegate = self
@@ -265,7 +265,7 @@ final class AddTrackerViewController: UIViewController {
         let hasColor = !trackerColor.isEmpty
         
         saveTrackerButton.isEnabled = hasText && hasCategory && hasSchedule && hasEmoji && hasColor
-        saveTrackerButton.backgroundColor = saveTrackerButton.isEnabled ? UIColor(named: "Black") : UIColor(named: "Gray")
+        saveTrackerButton.backgroundColor = saveTrackerButton.isEnabled ? UIColor(resource: .black) : UIColor(resource: .gray)
     }
 }
 
@@ -286,15 +286,15 @@ extension AddTrackerViewController: UITableViewDataSource, UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         content.text = indexPath.row == 0 ? "Категория" : "Расписание"
         content.textProperties.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        content.textProperties.color = UIColor(named: "Black") ?? .black
+        content.textProperties.color = UIColor(resource: .black)
         content.secondaryTextProperties.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        content.secondaryTextProperties.color = UIColor(named: "Gray") ?? .gray
+        content.secondaryTextProperties.color = UIColor(resource: .gray)
         content.secondaryText = indexPath.row == 0 ? selectedCategory : scheduleString
         cell.contentConfiguration = content
         
         cell.selectionStyle = .default
         cell.accessoryType = .disclosureIndicator
-        cell.backgroundColor = UIColor(named: "Background")
+        cell.backgroundColor = UIColor(resource: .background)
         
         return cell
     }
@@ -457,7 +457,7 @@ extension AddTrackerViewController: UICollectionViewDelegate {
             trackerColor = ""
             updateSaveButtonState()
             cell?.colorSelectorView.layer.borderWidth = 0
-            cell?.colorSelectorView.layer.borderColor = UIColor.white.cgColor
+            cell?.colorSelectorView.layer.borderColor = UIColor(resource: .white).cgColor
         }
     }
 }

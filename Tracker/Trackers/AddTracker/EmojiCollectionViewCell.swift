@@ -6,7 +6,7 @@ final class EmojiCollectionViewCell: UICollectionViewCell {
     let emojiSelectorView: UIView = {
         let emojiBackground = UIView()
         emojiBackground.layer.cornerRadius = 16
-        emojiBackground.backgroundColor = .ypWhite
+        emojiBackground.backgroundColor = UIColor(resource: .white)
         emojiBackground.clipsToBounds = true
         emojiBackground.translatesAutoresizingMaskIntoConstraints = false
         return emojiBackground

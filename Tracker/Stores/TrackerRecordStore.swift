@@ -57,4 +57,13 @@ final class TrackerRecordStore {
         request.fetchLimit = 1
         return (try? context.fetch(request))?.first
     }
+    
+    func fetchAllRecords() -> [TrackerRecord] {
+        let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        let records = (try? context.fetch(request)) ?? []
+        return records.compactMap { record in
+            guard let tracker = record.tracker, let id = tracker.id, let date = record.date else { return nil }
+            return TrackerRecord(trackerId: id, date: date)
+        }
+    }
 }

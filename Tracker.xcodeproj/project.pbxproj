@@ -6,6 +6,10 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		86E6CC782ECFC16000710C86 /* AppMetricaCore in Frameworks */ = {isa = PBXBuildFile; productRef = 86E6CC772ECFC16000710C86 /* AppMetricaCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		86A249642E5386610043FEBD /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -35,6 +39,7 @@
 		86A249612E5386610043FEBD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				86E6CC782ECFC16000710C86 /* AppMetricaCore in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -73,6 +78,9 @@
 				86A249662E5386610043FEBD /* Tracker */,
 			);
 			name = Tracker;
+			packageProductDependencies = (
+				86E6CC772ECFC16000710C86 /* AppMetricaCore */,
+			);
 			productName = Tracker;
 			productReference = 86A249642E5386610043FEBD /* Tracker.app */;
 			productType = "com.apple.product-type.application";
@@ -98,9 +106,13 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 86A2495B2E5386610043FEBD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				86E6CC762ECFC16000710C86 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */,
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 86A249652E5386610043FEBD /* Products */;
 			projectDirPath = "";
@@ -199,6 +211,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -264,6 +277,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -337,6 +351,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		86E6CC762ECFC16000710C86 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/appmetrica/appmetrica-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		86E6CC772ECFC16000710C86 /* AppMetricaCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 86E6CC762ECFC16000710C86 /* XCRemoteSwiftPackageReference "appmetrica-sdk-ios" */;
+			productName = AppMetricaCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 86A2495C2E5386610043FEBD /* Project object */;
 }

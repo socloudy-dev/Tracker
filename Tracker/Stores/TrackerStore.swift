@@ -80,4 +80,23 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
         guard indexPath.item < trackersInSection.count else { return nil }
         return trackersInSection[indexPath.item].toModel()
     }
+    
+    func allTrackersForDate(_ date: Date) -> [Tracker] {
+        guard let sections = fetchedResultsController?.sections else { return [] }
+        return sections
+            .flatMap { ($0.objects as? [TrackerCoreData]) ?? [] }
+            .filter { core in
+                guard let schedule = core.schedule as? [Int] else { return false }
+                let weekday = Calendar.current.component(.weekday, from: date)
+                return schedule.contains(weekday)
+            }
+            .compactMap { $0.toModel() }
+    }
+    
+    func fetchAllTrackers() -> [Tracker] {
+        guard let sections = fetchedResultsController?.sections else { return [] }
+        return sections
+            .flatMap { ($0.objects as? [TrackerCoreData]) ?? [] }
+            .compactMap { $0.toModel() }
+    }
 }
