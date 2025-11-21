@@ -240,7 +240,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
             filterPlaceholderImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             filterPlaceholderImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
             
-            filterPlaceholderLabel.topAnchor.constraint(equalTo: placeholderImageView.bottomAnchor, constant: 8),
+            filterPlaceholderLabel.topAnchor.constraint(equalTo: filterPlaceholderImageView.bottomAnchor, constant: 8),
             filterPlaceholderLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
         ])
     }

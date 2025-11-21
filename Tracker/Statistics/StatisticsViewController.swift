@@ -49,6 +49,21 @@ class StatisticsViewController: UIViewController {
         return tableView
     }()
     
+    private let placeholderImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(resource: .nothingToAnalyze))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private let placeholderLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Анализировать пока нечего"
+        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        label.textColor = UIColor(resource: .black)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -80,6 +95,8 @@ class StatisticsViewController: UIViewController {
     private func setupViews() {
         view.addSubview(titleLabel)
         view.addSubview(statisticsTableView)
+        view.addSubview(placeholderImageView)
+        view.addSubview(placeholderLabel)
     }
     
     private func setupConstraints() {
@@ -92,6 +109,14 @@ class StatisticsViewController: UIViewController {
             statisticsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             statisticsTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             statisticsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            
+            placeholderImageView.widthAnchor.constraint(equalToConstant: 80),
+            placeholderImageView.heightAnchor.constraint(equalToConstant: 80),
+            placeholderImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            placeholderImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -28),
+            
+            placeholderLabel.topAnchor.constraint(equalTo: placeholderImageView.bottomAnchor, constant: 8),
+            placeholderLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor)
         ])
     }
     
@@ -131,6 +156,16 @@ class StatisticsViewController: UIViewController {
         ]
         
         statisticsTableView.reloadData()
+        updatePlaceholderVisibility()
+    }
+    
+    private func updatePlaceholderVisibility() {
+        let hasRecords = statisticEntities.contains { $0.count > 0 }
+        let shouldShowPlaceholder = !hasRecords
+        
+        statisticsTableView.isHidden = shouldShowPlaceholder
+        placeholderImageView.isHidden = !shouldShowPlaceholder
+        placeholderLabel.isHidden = !shouldShowPlaceholder
     }
     
     @objc
