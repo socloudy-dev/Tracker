@@ -30,7 +30,8 @@ final class TabBarController: UITabBarController {
         let trackersViewController = TrackersViewController(trackerStore: trackerStore,
                                                             categoryStore: categoryStore,
                                                             recordStore: recordStore)
-        let statisticsViewController = StatisticsViewController()
+        let statisticsViewController = StatisticsViewController(trackerStore: trackerStore,
+                                                                recordStore: recordStore)
         
         let trackersWithNavigationBar = UINavigationController(rootViewController: trackersViewController)
         trackersWithNavigationBar.navigationBar.prefersLargeTitles = true
@@ -38,13 +39,13 @@ final class TabBarController: UITabBarController {
         statisticsWithNavigationBar.navigationBar.prefersLargeTitles = true
         
         trackersViewController.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: Loc.TabBar.trackers,
             image: UIImage(named: "Tab bar Trackers"),
             selectedImage: nil
         )
         
         statisticsViewController.tabBarItem = UITabBarItem(
-            title: "Статистика",
+            title: Loc.TabBar.statistics,
             image: UIImage(named: "Tab bar Statistics"),
             selectedImage: nil
         )

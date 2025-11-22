@@ -17,7 +17,7 @@ final class ScheduleViewController: UIViewController {
         let label = UILabel()
         label.text = "Расписание"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        label.textColor = UIColor(named: "Black")
+        label.textColor = UIColor(resource: .black)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -25,7 +25,7 @@ final class ScheduleViewController: UIViewController {
     private let weekDayTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.separatorStyle = .singleLine
-        tableView.separatorColor = UIColor(named: "Gray")
+        tableView.separatorColor = UIColor(resource: .gray)
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.isScrollEnabled = false
@@ -36,11 +36,11 @@ final class ScheduleViewController: UIViewController {
     
     private let saveScheduleButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: "Black")
+        button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
         button.setTitle("Готово", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.titleLabel?.textColor = UIColor(named: "White")
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -50,7 +50,7 @@ final class ScheduleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "White")
+        view.backgroundColor = UIColor(resource: .white)
         
         weekDayTableView.dataSource = self
         weekDayTableView.delegate = self
@@ -107,16 +107,16 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         content.text = day.displayName
         content.textProperties.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        content.textProperties.color = UIColor(named: "Black") ?? .black
+        content.textProperties.color = UIColor(resource: .black)
         cell.contentConfiguration = content
         
         let toggle = UISwitch()
         toggle.isOn = selectedWeekDays.contains(day)
-        toggle.onTintColor = UIColor(named: "Blue")
+        toggle.onTintColor = UIColor(resource: .blue)
         toggle.tag = indexPath.row
         toggle.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
         
-        cell.backgroundColor = UIColor(named: "Background")
+        cell.backgroundColor = UIColor(resource: .background)
         cell.selectionStyle = .none
         cell.accessoryView = toggle
         

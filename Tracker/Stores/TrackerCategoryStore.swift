@@ -19,4 +19,33 @@ final class TrackerCategoryStore {
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         return (try? context.fetch(request)) ?? []
     }
+    
+    func delete(_ category: TrackerCategory) {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "name == %@", category.name)
+        if let object = try? context.fetch(request).first {
+            context.delete(object)
+            CoreDataStack.shared.saveContext()
+        }
+    }
+
+    func update(_ category: TrackerCategory, newName: String) {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "name == %@", category.name)
+        if let object = try? context.fetch(request).first {
+            object.name = newName
+            CoreDataStack.shared.saveContext()
+        }
+    }
+    
+    func category(for trackerName: String) -> TrackerCategoryCoreData? {
+        let categories = fetchAll()
+        for category in categories {
+            if let trackers = category.trackers as? Set<TrackerCoreData>,
+               trackers.contains(where: { $0.name == trackerName }) {
+                return category
+            }
+        }
+        return nil
+    }
 }

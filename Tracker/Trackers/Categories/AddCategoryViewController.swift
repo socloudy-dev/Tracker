@@ -54,9 +54,9 @@ final class AddCategoryViewController: UIViewController {
         let button = UIButton()
         button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
-        button.setTitle("Добавить категорию", for: .normal)
+        button.setTitle("Готово", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.titleLabel?.textColor = UIColor(resource: .white)
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

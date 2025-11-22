@@ -1,0 +1,31 @@
+// Trackers Main
+
+trackers.title = "Trackers";
+trackers.filtersButton = "Filters";
+trackers.searchPlaceholder = "Search";
+trackers.placeholderLabel = "What will we track?";
+trackers.filterPlaceholderLabel = "Nothing was found";
+trackers.completedFilterHeader = "Completed";
+trackers.uncompleteFilterHeader = "Uncomplete";
+trackers.searchResultsHeader = "Search results";
+trackers.trackerAlertTitle = "Are you sure you want to delete the tracker?";
+trackers.contextMenuEditButton = "Edit";
+trackers.contextMenuDeleteButton = "Delete";
+
+// Tab Bar
+
+tabBar.trackers = "Trackers";
+tabBar.statistics = "Statistics";
+
+// Filters
+
+filters.title = "Filters";
+filters.all = "All trackers";
+filters.today = "Today trackers";
+filters.completed = "Completed";
+filters.notCompleted = "Not completed";
+
+// Alert Actions
+
+alert.cancelLabel = "Cancel";
+alert.deleteLabel = "Delete";

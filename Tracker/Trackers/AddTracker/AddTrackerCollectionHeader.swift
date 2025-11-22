@@ -6,7 +6,7 @@ final class AddTrackerCollectionHeader: UICollectionReusableView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor.ypBlack
+        label.textColor = UIColor(resource: .black)
         label.text = "Важное"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

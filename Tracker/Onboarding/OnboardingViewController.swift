@@ -17,8 +17,8 @@ final class OnboardingViewController: UIPageViewController {
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = 0
         
-        pageControl.currentPageIndicatorTintColor = .ypBlack
-        pageControl.pageIndicatorTintColor = UIColor.ypBlack.withAlphaComponent(0.3)
+        pageControl.currentPageIndicatorTintColor = UIColor(resource: .black)
+        pageControl.pageIndicatorTintColor = UIColor(resource: .black).withAlphaComponent(0.3)
         
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         return pageControl
@@ -26,11 +26,11 @@ final class OnboardingViewController: UIPageViewController {
     
     private lazy var skipButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .ypBlack
+        button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
         button.setTitle("Вот это технологии!", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(.ypWhite, for: .normal)
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

@@ -6,8 +6,8 @@ final class TrackerCategoryHeaderView: UICollectionReusableView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = UIColor.ypBlack
-        label.text = "Важное"
+        label.textColor = UIColor(resource: .black)
+        label.text = "Категории"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

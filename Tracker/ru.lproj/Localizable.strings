@@ -1,0 +1,31 @@
+// Trackers Main
+
+trackers.title = "Трекеры";
+trackers.filtersButton = "Фильтры";
+trackers.searchPlaceholder = "Поиск";
+trackers.placeholderLabel = "Что будем отслеживать?";
+trackers.filterPlaceholderLabel = "Ничего не найдено";
+trackers.completedFilterHeader = "Выполненные";
+trackers.uncompleteFilterHeader = "Не выполненные";
+trackers.searchResultsHeader = "Результаты поиска";
+trackers.trackerAlertTitle = "Уверены что хотите удалить трекер?";
+trackers.contextMenuEditButton = "Редактировать";
+trackers.contextMenuDeleteButton = "Удалить";
+
+// Tab Bar
+
+tabBar.trackers = "Трекеры";
+tabBar.statistics = "Статистика";
+
+// Filters
+
+filters.title = "Фильтры";
+filters.all = "Все трекеры";
+filters.today = "Трекеры на сегодня";
+filters.completed = "Завершенные";
+filters.notCompleted = "Не завершенные";
+
+// Alert Actions
+
+alert.cancelLabel = "Отменить";
+alert.deleteLabel = "Удалить";

@@ -12,10 +12,10 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     
     private var trackerId: UUID?
     
-    private let containerView: UIView = {
+     let containerView: UIView = {
         let container = UIView()
         container.layer.cornerRadius = 16
-        container.backgroundColor = UIColor(named: "Red")
+        container.backgroundColor = UIColor(resource: .red)
         container.translatesAutoresizingMaskIntoConstraints = false
         return container
     }()
@@ -49,7 +49,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     private let counterLabel: UILabel = {
         let counter = UILabel()
         counter.font = .systemFont(ofSize: 12, weight: .medium)
-        counter.textColor = UIColor(named: "Black")
+        counter.textColor = UIColor(resource: .black)
         counter.translatesAutoresizingMaskIntoConstraints = false
         return counter
     }()
@@ -77,9 +77,9 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     
     private func setupViews() {
         contentView.addSubview(containerView)
-        contentView.addSubview(emojiBackgroundView)
-        contentView.addSubview(emojiLabel)
-        contentView.addSubview(titleLabel)
+        containerView.addSubview(emojiBackgroundView)
+        containerView.addSubview(emojiLabel)
+        containerView.addSubview(titleLabel)
         contentView.addSubview(counterLabel)
         contentView.addSubview(completeTrackerButton)
     }

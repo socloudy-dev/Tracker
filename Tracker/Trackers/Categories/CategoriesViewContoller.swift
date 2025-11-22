@@ -10,7 +10,7 @@ final class CategoriesViewContoller: UIViewController {
     
     weak var delegate: CategorySelectionDelegate?
     private let viewModel: CategoriesViewModel
-    private var selectedCategory: TrackerCategory?
+    var selectedCategory: TrackerCategory?
     
     private let categoryStore: TrackerCategoryStore
     
@@ -33,7 +33,7 @@ final class CategoriesViewContoller: UIViewController {
         let label = UILabel()
         label.text = "Категория"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        label.textColor = UIColor(named: "Black")
+        label.textColor = UIColor(resource: .black)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -41,7 +41,7 @@ final class CategoriesViewContoller: UIViewController {
     private let categoriesTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.separatorStyle = .singleLine
-        tableView.separatorColor = UIColor(named: "Gray")
+        tableView.separatorColor = UIColor(resource: .gray)
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.isScrollEnabled = true
@@ -53,11 +53,11 @@ final class CategoriesViewContoller: UIViewController {
     
     private let addCategoryButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: "Black")
+        button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
         button.setTitle("Добавить категорию", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.titleLabel?.textColor = UIColor(named: "White")
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -74,7 +74,7 @@ final class CategoriesViewContoller: UIViewController {
         let label = UILabel()
         label.text = "Привычки и события можно\n объединить по смыслу"
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor.ypBlack
+        label.textColor = UIColor(resource: .black)
         label.numberOfLines = 0
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -86,7 +86,7 @@ final class CategoriesViewContoller: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "White")
+        view.backgroundColor = UIColor(resource: .white)
         
         categoriesTableView.dataSource = self
         categoriesTableView.delegate = self
@@ -156,6 +156,22 @@ final class CategoriesViewContoller: UIViewController {
         }
     }
     
+    private func presentDeleteAlert(category: TrackerCategory) {
+        let alert = UIAlertController(
+            title: nil,
+            message: "Эта категория точно не нужна?",
+            preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.categoryStore.delete(category)
+            if self?.selectedCategory?.name == category.name {
+                self?.selectedCategory = nil
+            }
+        })
+        alert.addAction(UIAlertAction(title: "Отменить", style: .cancel))
+        present(alert, animated: true)
+    }
+    
     // MARK: - Actions
     
     @objc
@@ -178,11 +194,11 @@ extension CategoriesViewContoller: UITableViewDataSource, UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         content.text = category.name
         content.textProperties.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        content.textProperties.color = UIColor(named: "Black") ?? .black
+        content.textProperties.color = UIColor(resource: .black)
         cell.contentConfiguration = content
         
         cell.selectionStyle = .default
-        cell.backgroundColor = UIColor(named: "Background")
+        cell.backgroundColor = UIColor(resource: .background)
         cell.accessoryType = (category.name == selectedCategory?.name) ? .checkmark : .none
         
         return cell
@@ -211,10 +227,35 @@ extension CategoriesViewContoller: UITableViewDataSource, UITableViewDelegate {
         
         dismiss(animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let category = viewModel.categories[indexPath.row]
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ -> UIMenu? in
+            let editAction = UIAction(title: "Редактировать") { [weak self] _ in
+                guard let self = self else { return }
+                let editCategoryViewController = EditCategoryViewController(category: category, categoryStore: categoryStore)
+                editCategoryViewController.delegate = self
+                self.present(editCategoryViewController, animated: true)
+            }
+            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                presentDeleteAlert(category: category)
+                self.viewModel.load()
+            }
+            return UIMenu(title: "", children: [editAction, deleteAction])
+        }
+    }
 }
 
 extension CategoriesViewContoller: AddCategoryDelegate {
     func didCreateCategory() {
+        viewModel.load()
+    }
+}
+
+extension CategoriesViewContoller: EditCategoryDelegate {
+    func didEditCategory() {
         viewModel.load()
     }
 }
