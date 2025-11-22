@@ -16,21 +16,43 @@ final class TrackerStore: NSObject, NSFetchedResultsControllerDelegate {
         dataDidChange?()
     }
     
-    func create(id: UUID, name: String, color: UIColor, emoji: String, schedule: [WeekDay], category: TrackerCategoryCoreData) {
-        let tracker = TrackerCoreData(context: context)
-        tracker.id = id
-        tracker.name = name
-        tracker.color = color
-        tracker.emoji = emoji
-        tracker.schedule = schedule.map { NSNumber(value: $0.rawValue) } as NSObject
-        tracker.category = category
+    func create(tracker: Tracker, category: TrackerCategoryCoreData) {
+        let trackerCore = TrackerCoreData(context: context)
+        trackerCore.id = tracker.id
+        trackerCore.name = tracker.name
+        trackerCore.color = tracker.color
+        trackerCore.emoji = tracker.emoji
+        trackerCore.schedule = tracker.schedule.map { NSNumber(value: $0.rawValue) } as NSObject
+        trackerCore.category = category
         
         try? context.save()
     }
     
-    func delete(_ tracker: TrackerCoreData) {
-        context.delete(tracker)
+    func delete(id: UUID) {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+
+        if let tracker = try? context.fetch(request).first {
+            context.delete(tracker)
+            try? context.save()
+            dataDidChange?()
+        }
+    }
+    
+    func update(tracker: Tracker, from category: TrackerCategoryCoreData) {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        
+        guard let storedTracker = try? context.fetch(request).first else { return }
+        
+        storedTracker.name = tracker.name
+        storedTracker.color = tracker.color
+        storedTracker.emoji = tracker.emoji
+        storedTracker.schedule = tracker.schedule.map { NSNumber(value: $0.rawValue) } as NSObject
+        storedTracker.category = category
+        
         try? context.save()
+        dataDidChange?()
     }
     
     func fetchTrackers() {

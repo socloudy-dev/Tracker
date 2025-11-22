@@ -26,11 +26,11 @@ final class OnboardingViewController: UIPageViewController {
     
     private lazy var skipButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .ypBlack
+        button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
         button.setTitle("Вот это технологии!", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(.ypWhite, for: .normal)
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

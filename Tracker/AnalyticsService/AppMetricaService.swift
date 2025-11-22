@@ -1,11 +1,17 @@
 import AppMetricaCore
 
 final class AppMetricaService {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if let configuration = AppMetricaConfiguration(apiKey: AppMetricaKeys.apiKey) {
-            AppMetrica.activate(with: configuration)
+    static let shared = AppMetricaService()
+    
+    func report(event: String, item: String? = nil) {
+        var parameters: [String: Any] = [
+            "event": event,
+            "screen": "Main"
+        ]
+        if let item = item {
+            parameters["item"] = item
         }
-            
-        return true
+        AppMetrica.reportEvent(name: "ui_event", parameters: parameters)
+        print("Analytics:", parameters)
     }
 }

@@ -7,6 +7,7 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     private let trackerStore: TrackerStore
     private let categoryStore: TrackerCategoryStore
     private let recordStore: TrackerRecordStore
+    private let appMetrica = AppMetricaService.shared
     
     private var currentFilter: TrackerFilter = .all
     private var filteredTrackers: [Tracker] = []
@@ -27,6 +28,23 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    // MARK: - Initializer for testing
+    
+    convenience init(testing: Bool = false) {
+        if testing {
+            let coreDataStack = CoreDataStack()
+            let trackerStore = TrackerStore(context: coreDataStack.context)
+            let categoryStore = TrackerCategoryStore(context: coreDataStack.context)
+            let recordStore = TrackerRecordStore(context: coreDataStack.context)
+            
+            self.init(trackerStore: trackerStore, categoryStore: categoryStore, recordStore: recordStore)
+            return
+        } else {
+            fatalError("Use designated initializer for production code")
+        }
     }
     
     // MARK: - UI Elements
@@ -153,6 +171,16 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         
         reloadTrackers()
         applyFilterIfNeeded()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appMetrica.report(event: "open")
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        appMetrica.report(event: "close")
     }
     
     // MARK: - Setup UI Methods
@@ -325,11 +353,26 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
         filterPlaceholderLabel.isHidden = !shouldShowPlaceholder
     }
     
+    private func presentDeleteAlert(tracker: Tracker) {
+        let alert = UIAlertController(
+            title: nil,
+            message: Loc.TrackersMain.trackerAlertTitle,
+            preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: Loc.Alert.deleteLabel, style: .destructive) { [weak self] _ in
+            self?.trackerStore.delete(id: tracker.id)
+            self?.reloadTrackers()
+        })
+        alert.addAction(UIAlertAction(title: Loc.Alert.cancelLabel, style: .cancel))
+        present(alert, animated: true)
+    }
+    
     // MARK: - Actions
     
     @objc
     private func addButtonDidTap() {
-        let viewController = AddTrackerViewController(categoryStore: categoryStore)
+        appMetrica.report(event: "click", item: "add_track")
+        let viewController = AddTrackerViewController(categoryStore: categoryStore, isEditing: false)
         viewController.delegate = self
         viewController.modalPresentationStyle = .formSheet
         present(viewController, animated: true)
@@ -349,8 +392,10 @@ class TrackersViewController: UIViewController, UISearchBarDelegate {
     
     @objc
     private func filtersButtonTapped() {
+        appMetrica.report(event: "click", item: "filter")
         let filtersViewController = FiltersViewController()
         filtersViewController.delegate = self
+        filtersViewController.selectedFilter = currentFilter
         filtersViewController.modalPresentationStyle = .formSheet
         present(filtersViewController, animated: true)
     }
@@ -462,7 +507,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension TrackersViewController: AddTrackerDelegate {
-    func didCreateTracker(_ tracker: Tracker, from category: String) {
+    func didCreateOrEditTracker(_ tracker: Tracker, from category: String, isEditing: Bool) {
         let categoriesCore = categoryStore.fetchAll()
         let categoryCoreData: TrackerCategoryCoreData
         if let existing = categoriesCore.first(where: { $0.name == category }) {
@@ -471,14 +516,11 @@ extension TrackersViewController: AddTrackerDelegate {
             categoryCoreData = categoryStore.create(name: category)
         }
         
-        trackerStore.create(
-            id: tracker.id,
-            name: tracker.name,
-            color: tracker.color,
-            emoji: tracker.emoji,
-            schedule: tracker.schedule,
-            category: categoryCoreData
-        )
+        if isEditing {
+                trackerStore.update(tracker: tracker, from: categoryCoreData)
+        } else {
+            trackerStore.create(tracker: tracker, category: categoryCoreData)
+        }
         
         reloadTrackers()
     }
@@ -486,6 +528,7 @@ extension TrackersViewController: AddTrackerDelegate {
 
 extension TrackersViewController: TrackerCellDelegate {
     func trackerCellDidTapComplete(_ cell: TrackerCollectionViewCell, for trackerId: UUID) {
+        appMetrica.report(event: "click", item: "track")
         let today = Calendar.current.startOfDay(for: Date())
         if currentDate > today { return }
         
@@ -526,5 +569,65 @@ extension TrackersViewController: FiltersViewControllerDelegate {
         }
 
         dismiss(animated: true)
+    }
+}
+
+extension TrackersViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView,
+                        contextMenuConfigurationForItemAt indexPath: IndexPath,
+                        point: CGPoint) -> UIContextMenuConfiguration? {
+
+        let tracker: Tracker
+        if let text = searchField.text, !text.isEmpty {
+            tracker = filteredTrackers[indexPath.item]
+        } else if currentFilter == .completed || currentFilter == .incomplete {
+            tracker = filteredTrackers[indexPath.item]
+        } else {
+            guard let t = trackerStore.tracker(at: indexPath, for: currentDate) else { return nil }
+            tracker = t
+        }
+
+        let nsIndexPath = indexPath as NSIndexPath
+        return UIContextMenuConfiguration(identifier: nsIndexPath, previewProvider: nil) { _ in
+
+            let editAction = UIAction(title: Loc.TrackersMain.contextMenuEditButton) { [weak self] _ in
+                
+                self?.appMetrica.report(event: "click", item: "edit")
+                
+                guard let self = self else { return }
+
+                let addTrackerViewController = AddTrackerViewController(categoryStore: self.categoryStore, isEditing: true)
+                let counter = recordStore.fetchRecords(for: tracker.id).count
+                addTrackerViewController.configureForEditing(tracker: tracker, counter: counter)
+                addTrackerViewController.delegate = self
+                self.present(addTrackerViewController, animated: true)
+            }
+
+            let deleteAction = UIAction(title: Loc.TrackersMain.contextMenuDeleteButton, attributes: .destructive) { [weak self] _ in
+                
+                self?.appMetrica.report(event: "click", item: "delete")
+                
+                guard let self = self else { return }
+                self.presentDeleteAlert(tracker: tracker)
+            }
+
+            return UIMenu(children: [editAction, deleteAction])
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        
+        guard let indexPath = configuration.identifier as? IndexPath,
+                  let cell = collectionView.cellForItem(at: indexPath) as? TrackerCollectionViewCell else {
+                return nil
+            }
+
+            let path = UIBezierPath(roundedRect: cell.containerView.bounds, cornerRadius: cell.containerView.layer.cornerRadius)
+            
+            let parameters = UIPreviewParameters()
+            parameters.visiblePath = path
+            
+            return UITargetedPreview(view: cell.containerView, parameters: parameters)
     }
 }

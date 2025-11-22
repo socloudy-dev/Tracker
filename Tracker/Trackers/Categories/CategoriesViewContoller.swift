@@ -10,7 +10,7 @@ final class CategoriesViewContoller: UIViewController {
     
     weak var delegate: CategorySelectionDelegate?
     private let viewModel: CategoriesViewModel
-    private var selectedCategory: TrackerCategory?
+    var selectedCategory: TrackerCategory?
     
     private let categoryStore: TrackerCategoryStore
     

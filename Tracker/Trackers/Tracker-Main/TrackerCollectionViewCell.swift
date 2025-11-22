@@ -12,7 +12,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     
     private var trackerId: UUID?
     
-    private let containerView: UIView = {
+     let containerView: UIView = {
         let container = UIView()
         container.layer.cornerRadius = 16
         container.backgroundColor = UIColor(resource: .red)
@@ -77,9 +77,9 @@ class TrackerCollectionViewCell: UICollectionViewCell {
     
     private func setupViews() {
         contentView.addSubview(containerView)
-        contentView.addSubview(emojiBackgroundView)
-        contentView.addSubview(emojiLabel)
-        contentView.addSubview(titleLabel)
+        containerView.addSubview(emojiBackgroundView)
+        containerView.addSubview(emojiLabel)
+        containerView.addSubview(titleLabel)
         contentView.addSubview(counterLabel)
         contentView.addSubview(completeTrackerButton)
     }

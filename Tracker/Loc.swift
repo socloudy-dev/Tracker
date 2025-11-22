@@ -11,6 +11,9 @@ enum Loc {
         static let completedFilterHeader = NSLocalizedString("trackers.completedFilterHeader", comment: "")
         static let uncompleteFilterHeader = NSLocalizedString("trackers.uncompleteFilterHeader", comment: "")
         static let searchResultsHeader = NSLocalizedString("trackers.searchResultsHeader", comment: "")
+        static let trackerAlertTitle = NSLocalizedString("trackers.trackerAlertTitle", comment: "")
+        static let contextMenuEditButton = NSLocalizedString("trackers.contextMenuEditButton", comment: "")
+        static let contextMenuDeleteButton = NSLocalizedString("trackers.contextMenuDeleteButton", comment: "")
     }
 
     enum TabBar {
@@ -25,4 +28,10 @@ enum Loc {
         static let completed = NSLocalizedString("filters.completed", comment: "")
         static let notCompleted = NSLocalizedString("filters.notCompleted", comment: "")
     }
+    
+    enum Alert {
+        static let cancelLabel = NSLocalizedString("alert.cancelLabel", comment: "")
+        static let deleteLabel = NSLocalizedString("alert.deleteLabel", comment: "")
+    }
+
 }

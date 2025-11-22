@@ -8,6 +8,9 @@ trackers.filterPlaceholderLabel = "Ничего не найдено";
 trackers.completedFilterHeader = "Выполненные";
 trackers.uncompleteFilterHeader = "Не выполненные";
 trackers.searchResultsHeader = "Результаты поиска";
+trackers.trackerAlertTitle = "Уверены что хотите удалить трекер?";
+trackers.contextMenuEditButton = "Редактировать";
+trackers.contextMenuDeleteButton = "Удалить";
 
 // Tab Bar
 
@@ -21,3 +24,8 @@ filters.all = "Все трекеры";
 filters.today = "Трекеры на сегодня";
 filters.completed = "Завершенные";
 filters.notCompleted = "Не завершенные";
+
+// Alert Actions
+
+alert.cancelLabel = "Отменить";
+alert.deleteLabel = "Удалить";

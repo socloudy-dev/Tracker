@@ -37,4 +37,15 @@ final class TrackerCategoryStore {
             CoreDataStack.shared.saveContext()
         }
     }
+    
+    func category(for trackerName: String) -> TrackerCategoryCoreData? {
+        let categories = fetchAll()
+        for category in categories {
+            if let trackers = category.trackers as? Set<TrackerCoreData>,
+               trackers.contains(where: { $0.name == trackerName }) {
+                return category
+            }
+        }
+        return nil
+    }
 }

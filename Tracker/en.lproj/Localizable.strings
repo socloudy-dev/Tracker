@@ -8,6 +8,9 @@ trackers.filterPlaceholderLabel = "Nothing was found";
 trackers.completedFilterHeader = "Completed";
 trackers.uncompleteFilterHeader = "Uncomplete";
 trackers.searchResultsHeader = "Search results";
+trackers.trackerAlertTitle = "Are you sure you want to delete the tracker?";
+trackers.contextMenuEditButton = "Edit";
+trackers.contextMenuDeleteButton = "Delete";
 
 // Tab Bar
 
@@ -21,3 +24,8 @@ filters.all = "All trackers";
 filters.today = "Today trackers";
 filters.completed = "Completed";
 filters.notCompleted = "Not completed";
+
+// Alert Actions
+
+alert.cancelLabel = "Cancel";
+alert.deleteLabel = "Delete";
